@@ -9,7 +9,8 @@ from torch import nn
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import time
-from Classcodew512d3 import NeuralNetwork
+from Classcodew512d3 import NeuralNetwork #I need to check this
+#test
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
