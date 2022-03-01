@@ -9,7 +9,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import time
-from Classcodew512d3 import NeuralNetwork
+from Create_5_models_w200d3 import NeuralNetwork
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -38,10 +38,9 @@ def test(dataloader, model, loss_fn):
     size = len(dataloader.dataset)
     num_batches = len(dataloader)
     model.eval()
-    test_loss, correct, sample = 0, 0, 0
+    test_loss, correct = 0, 0
     with torch.no_grad():
         for X, y in dataloader:
-            sample += 1
             X, y = X.to(device), y.to(device)
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
@@ -52,7 +51,7 @@ def test(dataloader, model, loss_fn):
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
 training_times = 5 #amount of how many times to train data
-width = 512 #amount of nodes
+width = 200 #amount of nodes
 depth = 3 #amount of layers
 
 # Load training data from own script. 
@@ -119,9 +118,9 @@ for u in range(training_times):
         ax.label_outer()
 
     plt.show()
-    fig.savefig(f"Plot_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pdf")
+    fig.savefig(f"Plot_xavier_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pdf")
     
-    torch.save(model.state_dict(), f"model_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pth")
-    print(f"Saved PyTorch Model State to model_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pth")
+    torch.save(model.state_dict(), f"model_xavier_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pth")
+    print(f"Saved PyTorch Model State to model_xavier_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pth")
     
     #batch_size += 50

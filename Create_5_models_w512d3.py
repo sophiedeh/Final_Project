@@ -33,8 +33,3 @@ for i in range(numbers_of_models):
     model = NeuralNetwork(width=width)
     torch.save(model.state_dict(), f"initial_model_{i+1}_w{width}_d{depth}.pth")
     print(f"Saved PyTorch Model State to initial_model_{i+1}_w{width}_d{depth}.pth")
-
-
-
-    
-    
