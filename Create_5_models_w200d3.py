@@ -27,7 +27,7 @@ class NeuralNetwork(nn.Module):
     
 def init_weights(m):
         if isinstance(m, nn.Linear):
-            torch.nn.init.xavier_uniform_(m.weight)
+            torch.nn.init.kaiming_uniform_(m.weight)
             #m.bias.data.fill_(0.01)
     
 width = 200
@@ -37,5 +37,5 @@ numbers_of_models = 5
 for i in range(numbers_of_models): 
     model = NeuralNetwork(width=width)
     model.apply(init_weights)
-    torch.save(model.state_dict(), f"initial_model_xavier_{i+1}_w{width}_d{depth}.pth")
-    print(f"Saved PyTorch Model State to initial_model_xavier_{i+1}_w{width}_d{depth}.pth")
+    torch.save(model.state_dict(), f"initial_model_kaiming_uniform_{i+1}_w{width}_d{depth}.pth")
+    print(f"Saved PyTorch Model State to initial_model_kaiming_uniform_{i+1}_w{width}_d{depth}.pth")
