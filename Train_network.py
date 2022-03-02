@@ -81,7 +81,7 @@ for u in range(training_times):
     print(f"Using {device} device")
     
     model = NeuralNetwork(width=width)
-    model.load_state_dict(torch.load(f"initial_model_{u+1}_w{width}_d{depth}.pth"))    
+    model.load_state_dict(torch.load(f"initial_model_xavier_{u+1}_w{width}_d{depth}.pth"))    
     
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
