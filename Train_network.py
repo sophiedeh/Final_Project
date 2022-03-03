@@ -9,7 +9,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import time
-from Create_5_models_w200d3 import NeuralNetwork
+from Create_5_models_w10d3 import NeuralNetwork
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -51,7 +51,7 @@ def test(dataloader, model, loss_fn):
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
 training_times = 5 #amount of how many times to train data
-width = 200 #amount of nodes
+width = 10 #amount of nodes
 depth = 3 #amount of layers
 
 # Load training data from own script. 
