@@ -19,15 +19,19 @@ class NeuralNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(width, 10)
         )
+        with torch.no_grad():
+            self.linear_relu_stack[0].weight.random_ 
+            self.linear_relu_stack[2].weight.random_ 
+            self.linear_relu_stack[4].weight.random_ 
 
     def forward(self, x):
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
         return logits
     
-def init_weights(m):
-        if isinstance(m, nn.Linear):
-            torch.nn.init.kaiming_uniform_(m.weight)
+#def init_weights(m):
+        #if isinstance(m, nn.Linear):
+            #torch.nn.init.random_(m.weight)
             #m.bias.data.fill_(0.01)
     
 width = 200
@@ -36,6 +40,6 @@ numbers_of_models = 5
 
 for i in range(numbers_of_models): 
     model = NeuralNetwork(width=width)
-    model.apply(init_weights)
-    torch.save(model.state_dict(), f"initial_model_kaiming_uniform_{i+1}_w{width}_d{depth}.pth")
-    print(f"Saved PyTorch Model State to initial_model_kaiming_uniform_{i+1}_w{width}_d{depth}.pth")
+    #model.apply(init_weights)
+    torch.save(model.state_dict(), f"initial_model_random_{i+1}_w{width}_d{depth}.pth")
+    print(f"Saved PyTorch Model State to initial_model_random_{i+1}_w{width}_d{depth}.pth")

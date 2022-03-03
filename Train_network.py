@@ -81,7 +81,7 @@ for u in range(training_times):
     print(f"Using {device} device")
     
     model = NeuralNetwork(width=width)
-    model.load_state_dict(torch.load(f"initial_model_kaiming_uniform_{u+1}_w{width}_d{depth}.pth"))    
+    model.load_state_dict(torch.load(f"initial_model_random_{u+1}_w{width}_d{depth}.pth"))    
     
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
@@ -118,9 +118,9 @@ for u in range(training_times):
         ax.label_outer()
 
     plt.show()
-    fig.savefig(f"Plot_kaiming_uniform_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pdf")
+    fig.savefig(f"Plot_random_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pdf")
     
-    torch.save(model.state_dict(), f"model_kaiming_uniform_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pth")
-    print(f"Saved PyTorch Model State to model_kaiming_uniform_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pth")
+    torch.save(model.state_dict(), f"model_random_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pth")
+    print(f"Saved PyTorch Model State to model_random_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pth")
     
     #batch_size += 50
