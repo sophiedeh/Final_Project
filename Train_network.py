@@ -113,7 +113,7 @@ for u in range(training_times):
 
     for ax in axs.flat:
         ax.set(xlabel='Number of steps', ylabel='Loss')
-        ax.yscale('log')
+        ax.set_yscale('log')
 
     for ax in axs.flat:
         ax.label_outer()
