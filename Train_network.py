@@ -64,7 +64,7 @@ test_data = torch.load('mini_pca_test.pt')
 dataset_size = len(training_data)
 
 # Define the batch size
-batch_size = 100
+batch_size = 200
 
 for u in range(training_times):       
     # Create data loaders.
@@ -81,7 +81,7 @@ for u in range(training_times):
     print(f"Using {device} device")
     
     model = NeuralNetwork(width=width)
-    model.load_state_dict(torch.load(f"initial_model_{u+1}_w{width}_d{depth}.pth"))    
+    model.load_state_dict(torch.load(f"initial_2_model_{u+1}_w{width}_d{depth}.pth"))    
     
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
