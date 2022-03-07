@@ -9,7 +9,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import time
-from Create_5_models_w200d5 import NeuralNetwork
+from Create_5_models_w512d3 import NeuralNetwork
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -51,8 +51,8 @@ def test(dataloader, model, loss_fn):
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
 training_times = 5 #amount of how many times to train data
-width = 200 #amount of nodes
-depth = 5 #amount of layers
+width = 512 #amount of nodes
+depth = 3 #amount of layers
 
 # Load training data from own script. 
 training_data = torch.load('mini_pca_train.pt')
@@ -64,7 +64,7 @@ test_data = torch.load('mini_pca_test.pt')
 dataset_size = len(training_data)
 
 # Define the batch size
-batch_size = 200
+batch_size = 300
 
 for u in range(training_times):       
     # Create data loaders.
@@ -81,7 +81,7 @@ for u in range(training_times):
     print(f"Using {device} device")
     
     model = NeuralNetwork(width=width)
-    model.load_state_dict(torch.load(f"initial_2_model_{u+1}_w{width}_d{depth}.pth"))    
+    model.load_state_dict(torch.load(f"initial_model_0503_{u+1}_w{width}_d{depth}.pth"))    
     
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
