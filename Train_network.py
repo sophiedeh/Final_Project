@@ -55,7 +55,7 @@ width = 200 #amount of nodes
 depth = 5 #amount of layers
 
 # Load training data from own script. 
-training_data = torch.load('mini_pca_train.pt')
+training_data = torch.load('mini_pca_train.pt') #use bigger data set 
 
 # Load test data from own script.
 test_data = torch.load('mini_pca_test.pt')
@@ -83,14 +83,14 @@ for u in range(training_times):
     model = NeuralNetwork(width=width)
     model.load_state_dict(torch.load(f"initial_model_{u+1}_w{width}_d{depth}.pth"))    
     
-    loss_fn = nn.CrossEntropyLoss()
+    loss_fn = nn.CrossEntropyLoss() #square error or hinge loss
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
     
     loss_values_train = []
     loss_values_test = []
   
     start = time.time()
-    epochs = 1000000
+    epochs = 100000
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer)
