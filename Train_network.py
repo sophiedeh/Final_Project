@@ -9,7 +9,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import time
-from Create_5_models_w200d5 import NeuralNetwork
+from Create_5_models_w200d7 import NeuralNetwork
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -52,7 +52,7 @@ def test(dataloader, model, loss_fn):
 
 training_times = 5 #amount of how many times to train data
 width = 200 #amount of nodes
-depth = 5 #amount of layers
+depth = 7 #amount of layers
 
 # Load training data from own script. 
 training_data = torch.load('mini_pca_train.pt') #use bigger data set 
@@ -64,7 +64,7 @@ test_data = torch.load('mini_pca_test.pt')
 dataset_size = len(training_data)
 
 # Define the batch size
-batch_size = 300
+batch_size = 200
 
 for u in range(training_times):       
     # Create data loaders.
