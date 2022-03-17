@@ -9,7 +9,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import time
-from Create_5_models_w200d7 import NeuralNetwork
+from Create_5_models_w50d8 import NeuralNetwork
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -19,8 +19,8 @@ def train(dataloader, model, loss_fn, optimizer):
         X, y = X.to(device), y.to(device)
 
      # Compute prediction error
-        pred = model(X)
-        loss = loss_fn(pred, y)
+        pred = model(X) #prediction error vector
+        loss = loss_fn(pred, y) #I believe summing over all elements is implementedn in loss function
 
         # Backpropagation
         optimizer.zero_grad()
@@ -50,12 +50,29 @@ def test(dataloader, model, loss_fn):
     correct /= size
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
+# def quadratic_hinge_loss_function(predicted,correct):
+#     # specifying the batch size
+#     size_dataset = predicted.size()[0] 
+#     # calculating the log of softmax values 
+#     delta, small_loss = 0
+#     for i in size_dataset:
+#         if predicted.argmax(1) == correct.argmax():
+#             delta = 1 - predicted[i,:]*correct[i,:]
+    
+        
+              
+#     my_outputs = F.log_softmax(my_outputs, dim=1)  
+#     selecting the values that correspond to labels
+#     my_outputs = my_outputs[range(my_batch_size), my_labels] 
+#     returning the results
+#     return -torch.sum(my_outputs)/number_examples    
+
 training_times = 5 #amount of how many times to train data
-width = 200 #amount of nodes
-depth = 7 #amount of layers
+width = 50 #amount of nodes
+depth = 8 #amount of layers
 
 # Load training data from own script. 
-training_data = torch.load('mini_pca_train.pt') #use bigger data set 
+training_data = torch.load('mini_pca_train.pt') #use bigger data set - check if this happened in variable explorer
 
 # Load test data from own script.
 test_data = torch.load('mini_pca_test.pt')
