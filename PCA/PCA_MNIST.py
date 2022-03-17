@@ -64,7 +64,7 @@ mini_test.to_csv('mini_pca_test.csv')
 
 # Also convert these into a pytorch friendly form
 pt_train = []
-pt_train_l = torch.zeros(mini_train.shape[0], 10) #amount of images are rows, 10 PCA columns? - missing column for lables?
+pt_train_l = torch.zeros(mini_train.shape[0], 10) #tensor to have index vector for each vector (thus 10 labels/columns)
 cols = mini_train.columns
 
 for row in range(mini_train.shape[0]):
@@ -104,11 +104,12 @@ torch.save(pt_test_data, fname_test)
 training_data = torch.load(fname_train)
 
 bm_train = []
-bm_train_l = torch.zeros(len(training_data), 1)
+bm_train_l = torch.zeros(len(training_data), 1) #one column
 
 for count, my_tuple in enumerate(training_data):
-    img = my_tuple[0] 
-    label = my_tuple[1]
+    img = my_tuple[0]
+    print(img) #array of 10 PCA
+    label = my_tuple[1] #array of 10 index
     label_int = label.argmax()
     
     if label_int%2==0:
@@ -118,8 +119,10 @@ for count, my_tuple in enumerate(training_data):
         
     bm_train.append(img)
 
-bm_train_tensor = torch.cat(bm_train)
-bm_train_data = TensorDataset(bm_train_tensor, bm_train_l)
+bm_train_tensor = torch.cat(bm_train) # size=(1000) supposed to convert the array to a tensor but printing remains one array
+print(bm_train_tensor.shape)
+print(bm_train_l.shape)
+bm_train_data = TensorDataset(bm_train_tensor, bm_train_l) #(items,10), (items,1)
 
 #Binary classification of test
 test_data = torch.load(fname_test)
