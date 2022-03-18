@@ -107,10 +107,10 @@ bm_train = []
 bm_train_l = torch.zeros(len(training_data), 1) #one column
 
 for count, my_tuple in enumerate(training_data):
-    img = my_tuple[0]
-    print(img) #array of 10 PCA
-    label = my_tuple[1] #array of 10 index
-    label_int = label.argmax()
+    img = my_tuple[0] #array of 10 PCA Size([10])
+    img = torch.unsqueeze(img,0)
+    label = my_tuple[1] #array of 10 index Size([10])
+    label_int = label.argmax(0) #tensor not integer
     
     if label_int%2==0:
         bm_train_l[count] = 1
@@ -120,8 +120,8 @@ for count, my_tuple in enumerate(training_data):
     bm_train.append(img)
 
 bm_train_tensor = torch.cat(bm_train) # size=(1000) supposed to convert the array to a tensor but printing remains one array
-print(bm_train_tensor.shape)
-print(bm_train_l.shape)
+print(bm_train_tensor.shape) #size is 10000
+print(bm_train_l.shape) #size is 1000,1
 bm_train_data = TensorDataset(bm_train_tensor, bm_train_l) #(items,10), (items,1)
 
 #Binary classification of test
@@ -132,6 +132,7 @@ bm_test_l = torch.zeros(len(test_data), 1)
 
 for count, my_tuple in enumerate(test_data):
     img = my_tuple[0]
+    img = torch.unsqueeze(img,0) 
     label = my_tuple[1]
     label_int = label.argmax()
     
@@ -155,16 +156,5 @@ if not debug:
     fname_train = 'binary_MNIST_pca_train.pt'
     torch.save(bm_train_data, fname_train)
     
-    fname_test = 'binary_MNIST_test.pt'
+    fname_test = 'binary_MNIST_pca_test.pt'
     torch.save(bm_test_data, fname_test)
-
-
-
-
-
-
-
-
-
-
-
