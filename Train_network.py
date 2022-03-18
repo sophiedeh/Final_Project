@@ -9,7 +9,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import time
-from Create_5_models_w50d8 import NeuralNetwork
+from Create_5_models_w50d7 import NeuralNetwork
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -50,32 +50,22 @@ def test(dataloader, model, loss_fn):
     correct /= size
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
-# def quadratic_hinge_loss_function(predicted,correct):
-#     # specifying the batch size
-#     size_dataset = predicted.size()[0] 
-#     # calculating the log of softmax values 
-#     delta, small_loss = 0
-#     for i in size_dataset:
-#         if predicted.argmax(1) == correct.argmax():
-#             delta = 1 - predicted[i,:]*correct[i,:]
+def make_quadratic_hinge_loss():
     
-        
-              
-#     my_outputs = F.log_softmax(my_outputs, dim=1)  
-#     selecting the values that correspond to labels
-#     my_outputs = my_outputs[range(my_batch_size), my_labels] 
-#     returning the results
-#     return -torch.sum(my_outputs)/number_examples    
+    def quadratic_hinge(output, target):
+        return (nn.HingeEmbeddingLoss()(output, target))**2
+    
+    return quadratic_hinge   
 
 training_times = 5 #amount of how many times to train data
 width = 50 #amount of nodes
-depth = 8 #amount of layers
+depth = 7 #amount of layers
 
 # Load training data from own script. 
-training_data = torch.load('mini_pca_train.pt') #use bigger data set - check if this happened in variable explorer
+training_data = torch.load('binary_MNIST_pca_train.pt') #use bigger data set - check if this happened in variable explorer
 
 # Load test data from own script.
-test_data = torch.load('mini_pca_test.pt')
+test_data = torch.load('binary_MNIST_pca_test.pt')
 
 # Define size 
 dataset_size = len(training_data)
@@ -100,7 +90,7 @@ for u in range(training_times):
     model = NeuralNetwork(width=width)
     model.load_state_dict(torch.load(f"initial_model_{u+1}_w{width}_d{depth}.pth"))    
     
-    loss_fn = nn.CrossEntropyLoss() #square error or hinge loss
+    loss_fn = make_quadratic_hinge_loss()
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
     
     loss_values_train = []
