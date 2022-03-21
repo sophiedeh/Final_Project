@@ -51,32 +51,31 @@ output_df.to_csv('pca_train.csv')
 
 # Make mini train and test sets with first 10 PCA components and 1000 data points
 # Note pandas .loc slicing includes start AND END points, but cols[:11] does not
-mini_train = output_df.loc[:999, cols[:11]]
-mini_test = output_df.loc[1000:1999, cols[:11]] #creates tensor (1000,11)
+mini_train = output_df.loc[:9999, cols[:11]]
+mini_test = output_df.loc[10000:19999, cols[:11]] #creates tensor (1000,11)
 
 mini_test.index = range(mini_test.shape[0])
 
 print('mini_train.shape = ', mini_train.shape)
 print('mini_test.shape = ', mini_test.shape)
 
-mini_train.to_csv('mini_pca_train.csv')
-mini_test.to_csv('mini_pca_test.csv')
+mini_train.to_csv('mini_pca_train_10000.csv')
+mini_test.to_csv('mini_pca_test_10000.csv')
 
 # Also convert these into a pytorch friendly form
 pt_train = []
-pt_train_l = torch.zeros(mini_train.shape[0], 10) #tensor to have index vector for each vector (thus 10 labels/columns)
+pt_train_l = torch.zeros(mini_train.shape[0], 10) #tensor with vectors where index can correspond to label
 cols = mini_train.columns
 
 for row in range(mini_train.shape[0]):
     label = mini_train.loc[row, cols[0]] 
     data_row = mini_train.loc[row, cols[1:]] #data of the images PCA components
-    data_row = np.expand_dims(data_row, axis=0) #basically creates one vector 
-    #data_row = np.expand_dims(data_row, axis=0) #double?
-    pt_train_l[row, int(label)] = 1 #creates a tensor where at every row a 1 is indexed for correct column with label
+    data_row = np.expand_dims(data_row, axis=0) #creates one vector 
+    pt_train_l[row, int(label)] = 1 #tensor where a 1 is indexed for correct column with label
     pt_train.append(torch.Tensor(data_row))
 
-pt_train_tensor = torch.cat(pt_train) #creates a tensor instead of sequence of vectors
-pt_train_data = TensorDataset(pt_train_tensor, pt_train_l) #difficulty visualizing, but but are vectors
+pt_train_tensor = torch.cat(pt_train) #alter sequence of vectors to tensor
+pt_train_data = TensorDataset(pt_train_tensor, pt_train_l) #dataset
 
 pt_test = []
 pt_test_l = torch.zeros(mini_test.shape[0], 10)
@@ -94,23 +93,23 @@ pt_test_tensor = torch.cat(pt_test)
 pt_test_data = TensorDataset(pt_test_tensor, pt_test_l)
 
 # Save pytorch data
-fname_train = 'mini_pca_train.pt'
+fname_train = 'mini_pca_train_10000.pt'
 torch.save(pt_train_data, fname_train)
 
-fname_test = 'mini_pca_test.pt'
+fname_test = 'mini_pca_test_10000.pt'
 torch.save(pt_test_data, fname_test)
 
-#Binary classification of train
+# Binary classification of train
 training_data = torch.load(fname_train)
 
 bm_train = []
 bm_train_l = torch.zeros(len(training_data), 1) #one column
 
 for count, my_tuple in enumerate(training_data):
-    img = my_tuple[0] #array of 10 PCA Size([10])
+    img = my_tuple[0] #array of 10 PCA
     img = torch.unsqueeze(img,0)
-    label = my_tuple[1] #array of 10 index Size([10])
-    label_int = label.argmax(0) #tensor not integer
+    label = my_tuple[1] #array of 10 index
+    label_int = label.argmax(0)
     
     if label_int%2==0:
         bm_train_l[count] = 1
@@ -119,12 +118,12 @@ for count, my_tuple in enumerate(training_data):
         
     bm_train.append(img)
 
-bm_train_tensor = torch.cat(bm_train) # size=(1000) supposed to convert the array to a tensor but printing remains one array
-print(bm_train_tensor.shape) #size is 10000
-print(bm_train_l.shape) #size is 1000,1
-bm_train_data = TensorDataset(bm_train_tensor, bm_train_l) #(items,10), (items,1)
+bm_train_tensor = torch.cat(bm_train) 
+print(bm_train_tensor.shape) 
+print(bm_train_l.shape) 
+bm_train_data = TensorDataset(bm_train_tensor, bm_train_l)
 
-#Binary classification of test
+# Binary classification of test
 test_data = torch.load(fname_test)
 
 bm_test = []
@@ -147,14 +146,8 @@ bm_test_tensor = torch.cat(bm_test)
 bm_test_data = TensorDataset(bm_test_tensor, bm_test_l)
 
 if not debug:
-    # # Save pytorch data
-    # data_output_dir = '{}data/binary_MNIST/'.format(base_path)
-    # dir_exists = os.path.isdir(data_output_dir)
-    # if not dir_exists:
-    #     os.mkdir(data_output_dir)
-    
-    fname_train = 'binary_MNIST_pca_train.pt'
+    fname_train = 'binary_MNIST_pca_train_10000.pt'
     torch.save(bm_train_data, fname_train)
     
-    fname_test = 'binary_MNIST_pca_test.pt'
+    fname_test = 'binary_MNIST_pca_test_10000.pt'
     torch.save(bm_test_data, fname_test)
