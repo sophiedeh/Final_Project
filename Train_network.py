@@ -9,7 +9,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import time
-from Create_5_models_w50d7 import NeuralNetwork
+from Create_5_models_w200d5 import NeuralNetwork
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -62,13 +62,13 @@ width = 50 #amount of nodes
 depth = 7 #amount of layers
 
 # Load training data from own script. 
-training_data = torch.load('binary_MNIST_pca_train.pt') #use bigger data set - check if this happened in variable explorer
+training_data = torch.load('binary_MNIST_pca_train_10000.pt') #use bigger data set - check if this happened in variable explorer
 
 # Load test data from own script.
-test_data = torch.load('binary_MNIST_pca_test.pt')
+test_data = torch.load('binary_MNIST_pca_test_10000.pt')
 
 # Define size 
-dataset_size = len(training_data)
+dataset_size = len(training_data) #size 1000? - variable explorer - aan het einde wel 10000, maar tussendoor niet en wel training data
 
 # Define the batch size
 batch_size = 200
@@ -126,9 +126,21 @@ for u in range(training_times):
         ax.label_outer()
 
     plt.show()
-    fig.savefig(f"Plot_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pdf")
+    fig.savefig(f"Plot_bs{batch_size}_w{width}_d{depth}_ds{dataset_size}_version{u+1}_e{epochs}_tt{training_times}.pdf")
     
-    torch.save(model.state_dict(), f"model_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pth")
-    print(f"Saved PyTorch Model State to model_bs{batch_size}_w{width}_d{depth}_version{u+1}_e{epochs}_tt{training_times}.pth")
+    torch.save(model.state_dict(), f"model_bs{batch_size}_w{width}_d{depth}_ds{dataset_size}_version{u+1}_e{epochs}_tt{training_times}.pth")
+    print(f"Saved PyTorch Model State to model_bs{batch_size}_w{width}_d{depth}_ds{dataset_size}_version{u+1}_e{epochs}_tt{training_times}.pth")
+    
+    final_losses_train = []
+    minimum_losses_test = []
+    
+    final_train_loss = loss_values_train[-1] #last value of training
+    minimum_test_loss = torch.min(loss_values_test) #minimum value of training
+    
+    final_losses_train.append(final_train_loss)
+    minimum_losses_test.append(minimum_test_loss)
+    
+    torch.save(final_losses_train,f"Final_losses_train_bs{batch_size}_w{width}_d{depth}_ds{dataset_size}_version{u+1}_e{epochs}_tt{training_times}.pt")
+    torch.save(minimum_losses_test,f"Minimum_losses_test_bs{batch_size}_w{width}_d{depth}_ds{dataset_size}_version{u+1}_e{epochs}_tt{training_times}.pt")
     
     #batch_size += 50
