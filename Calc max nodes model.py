@@ -9,4 +9,4 @@ def max_nodes_model(input, output, width, layers):
     total = input*width + layers*width*width + width*output
     return total
 
-max_nodes_model(10, 1, 10, 5)
+print(max_nodes_model(10, 1, 10, 5))

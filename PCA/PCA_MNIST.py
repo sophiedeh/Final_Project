@@ -124,9 +124,7 @@ for count, my_tuple in enumerate(training_data):
         
     bm_train.append(img)
 
-bm_train_tensor = torch.cat(bm_train) 
-print(bm_train_tensor.shape) 
-print(bm_train_l.shape) 
+bm_train_tensor = torch.cat(bm_train)  
 bm_train_data = TensorDataset(bm_train_tensor, bm_train_l)
 
 # Binary classification of test
