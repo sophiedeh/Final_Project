@@ -40,5 +40,6 @@ for i in range(different_depth):
             print(f"Saved PyTorch Model State to initial_model_w{width}_hl{hidlay}.pth")
             width += 50
     hidlay += 2
+    width = 50
     
     
