@@ -25,7 +25,7 @@ class NeuralNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(width, width), 
             nn.ReLU(),
-            nn.Linear(width, 10)
+            nn.Linear(width, 1) #can be positive, negative or zero? - bias U(-sqrt(K),sqrt(K))
         )
 
     def forward(self, x):
