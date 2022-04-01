@@ -9,7 +9,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import time
-from Models_w100to150_hl4to8 import NeuralNetwork
+from Models_w50to100_hl8to10 import NeuralNetwork
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -47,7 +47,8 @@ def test(dataloader, model, loss_fn):
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
             tensor_multiplied = torch.mul(pred,y)
-            correct += (tensor_multiplied[tensor_multiplied>1]).type(torch.float).sum().item() #equal sign means positive and other requirement is bigger than 1   
+            bigger_than_one = tensor_multiplied[tensor_multiplied>1]
+            correct += torch.numel(bigger_than_one) #equal sign means positive and other requirement is bigger than 1   
     test_loss /= num_batches
     loss_values_test.append(test_loss)
     correct /= size
@@ -66,8 +67,8 @@ def make_quadratic_hinge_loss():
     return quadratic_hinge   
 
 training_times = 9 #amount of how many times to train data
-width = 100 #amount of nodes per layer
-hidlay = 4 #amount of layers
+width = 50 #amount of nodes per layer
+hidlay = 8 #amount of layers
 different_depth = 3
 different_width = 3
 
@@ -122,12 +123,14 @@ for u in range(different_width):
         for i in range(len(loss_values_train)):
             number_of_steps.append(i*(dataset_size/batch_size))
             
-        fig, axs = plt.subplots(2,sharex=True)
+        fig, axs = plt.subplots(3,sharex=True)
         fig.suptitle(f"Train vs Test Losses width{width} hidlay{hidlay}")
         axs[0].plot(number_of_steps, loss_values_train,'-')
-        axs[0].set_title('Train')
-        axs[1].plot(number_of_steps, loss_values_test,'-')
-        axs[1].set_title('Test')
+        axs[0].set_title('Train_log')
+        axs[1].plot(number_of_steps, loss_values_train,'-')
+        axs[1].set_title('Train_linear')
+        axs[2].plot(number_of_steps, loss_values_test,'-')
+        axs[2].set_title('Test')
     
         for ax in axs.flat:
             ax.set(xlabel='Number of steps', ylabel='Loss')
@@ -135,6 +138,8 @@ for u in range(different_width):
     
         for ax in axs.flat:
             ax.label_outer()
+            
+        axs[1].set_yscale('linear')
     
         plt.show()
         fig.savefig(f"Plot_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pdf")
@@ -155,7 +160,7 @@ for u in range(different_width):
         torch.save(final_losses_train,f"Final_losses_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
         torch.save(minimum_losses_test,f"Minimum_losses_test_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
     
-        hidlay += 2  
+        hidlay += 1 
     width += 25
-    hidlay = 4
+    hidlay = 8
     #batch_size += 50
