@@ -15,6 +15,7 @@ def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
     model.train()
     running_loss = 0
+    start_epoch_time = time.time()
     for batch, (X, y) in enumerate(dataloader):
         X, y = X.to(device), y.to(device)
 
@@ -28,14 +29,27 @@ def train(dataloader, model, loss_fn, optimizer):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-
+        
         running_loss += loss.item()
         if batch % 100 == 0:
             loss, current = loss.item(), batch * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
-            
+        epoch_time = start_epoch_time - time.time()
+               
     loss_values_train.append(running_loss/len(dataloader)) #every batch adds to running loss therefore divide by number of batches
-                      
+    epoch_times.append(epoch_time)
+    #recognize_plateau(loss_values_train, epoch, previous_steps, previous_loss)
+    # current_steps = epoch * (dataset_size/batch_size)
+    # current_loss = loss_values_train[-1]
+    # der = (current_loss - previous_loss)/(current_steps - previous_steps)
+    # if der==0: #der<=10^-6 optional if this does not work
+    #     start_plateau = time.time()
+        
+        
+    # previous_loss = current_loss
+    # previous_steps = current_steps
+    
+                  
 def test(dataloader, model, loss_fn):
     size = len(dataloader.dataset)
     num_batches = len(dataloader)
@@ -64,7 +78,25 @@ def make_quadratic_hinge_loss():
         loss = (1/len(output)) * summed
         return loss
     
-    return quadratic_hinge   
+    return quadratic_hinge    
+
+# def recognize_plateau(training_values, epoch, previous_steps, previous_loss):
+#     current_steps = epoch * (dataset_size/batch_size)
+#     current_loss = training_values[-1]
+#     der = (current_loss - previous_loss)/(current_steps - previous_steps)
+#     activation = False
+#     if der==0: #der<=10^-6 optional if this does not work
+#         activation = True
+#         start_plateau = time.time()
+#     return activation
+    
+# def calculate_escape_time(activation, start_plateau):   
+#     while activation == True:
+#         time_in_plateau = time.time() - start_plateau
+#         if activation == False:
+#             break
+#     escape_time = time_in_plateau
+#     return escape_time
 
 training_times = 9 #amount of how many times to train data
 width = 50 #amount of nodes per layer
@@ -107,6 +139,9 @@ for u in range(different_width):
         
         loss_values_train = []
         loss_values_test = []
+        #previous_loss = 0
+        #previous_steps = 0
+        epoch_times = []
       
         start = time.time()
         epochs = 50000
@@ -120,8 +155,15 @@ for u in range(different_width):
         print(f"Elapsed time {elapsed_time}\n-------------------------------")
             
         number_of_steps = []
+        derivatives = []
+        previous_loss = 0
+        previous_steps = 0
         for i in range(len(loss_values_train)):
             number_of_steps.append(i*(dataset_size/batch_size))
+            der = (loss_values_train[i] - previous_loss)/(number_of_steps[i] - previous_steps)
+            derivatives.append(der)
+            previous_loss = loss_values_train[i]
+            previous_steps = number_of_steps[i]
             
         fig, axs = plt.subplots(3,sharex=True)
         fig.suptitle(f"Train vs Test Losses width{width} hidlay{hidlay}")
@@ -159,6 +201,8 @@ for u in range(different_width):
         
         torch.save(final_losses_train,f"Final_losses_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
         torch.save(minimum_losses_test,f"Minimum_losses_test_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
+        torch.save(derivatives,f"Derivatives_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
+        torch.save(epoch_times, f"Epoch_times_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
     
         hidlay += 1 
     width += 25
