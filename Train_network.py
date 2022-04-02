@@ -159,7 +159,7 @@ for u in range(different_width):
         previous_loss = 0
         previous_steps = 0
         for i in range(len(loss_values_train)):
-            number_of_steps.append(i*(dataset_size/batch_size))
+            number_of_steps.append((i+1)*(dataset_size/batch_size)) # i + 1 since first value corresponds to first epoch so not zero epoch
             der = (loss_values_train[i] - previous_loss)/(number_of_steps[i] - previous_steps)
             derivatives.append(der)
             previous_loss = loss_values_train[i]
@@ -201,7 +201,6 @@ for u in range(different_width):
         
         torch.save(final_losses_train,f"Final_losses_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
         torch.save(minimum_losses_test,f"Minimum_losses_test_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
-        torch.save(derivatives,f"Derivatives_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
         torch.save(epoch_times, f"Epoch_times_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
     
         hidlay += 1 
