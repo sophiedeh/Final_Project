@@ -9,13 +9,13 @@ from torch import nn
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import time
+import numpy as np
 from Models_w50to100_hl8to10 import NeuralNetwork
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
     model.train()
     running_loss = 0
-    start_epoch_time = time.time()
     for batch, (X, y) in enumerate(dataloader):
         X, y = X.to(device), y.to(device)
 
@@ -34,10 +34,9 @@ def train(dataloader, model, loss_fn, optimizer):
         if batch % 100 == 0:
             loss, current = loss.item(), batch * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
-        epoch_time = start_epoch_time - time.time()
+
                
     loss_values_train.append(running_loss/len(dataloader)) #every batch adds to running loss therefore divide by number of batches
-    epoch_times.append(epoch_time)
     #recognize_plateau(loss_values_train, epoch, previous_steps, previous_loss)
     # current_steps = epoch * (dataset_size/batch_size)
     # current_loss = loss_values_train[-1]
@@ -99,10 +98,10 @@ def make_quadratic_hinge_loss():
 #     return escape_time
 
 training_times = 9 #amount of how many times to train data
-width = 50 #amount of nodes per layer
+width = 100 #amount of nodes per layer
 hidlay = 8 #amount of layers
 different_depth = 3
-different_width = 3
+different_width = 1
 
 # Load training data from own script. 
 training_data = torch.load('binary_MNIST_pca_train.pt') #Tensordataset with first image and then 1 or -1
@@ -141,7 +140,6 @@ for u in range(different_width):
         loss_values_test = []
         #previous_loss = 0
         #previous_steps = 0
-        epoch_times = []
       
         start = time.time()
         epochs = 50000
@@ -151,19 +149,26 @@ for u in range(different_width):
             test(test_dataloader, model, loss_fn)
             end = time.time()
             elapsed_time = end - start
+            
+            if t % 1000 == 0:
+                torch.save(model.state_dict(), f"model_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{t}_tt{training_times}.pth")
+                print(f"Saved PyTorch Model State to model_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{t}_tt{training_times}.pth")
+        
         print("Done!")
         print(f"Elapsed time {elapsed_time}\n-------------------------------")
             
         number_of_steps = []
-        derivatives = []
-        previous_loss = 0
-        previous_steps = 0
+        # derivatives = []
+        # previous_loss = 0
+        # previous_steps = 0
         for i in range(len(loss_values_train)):
             number_of_steps.append((i+1)*(dataset_size/batch_size)) # i + 1 since first value corresponds to first epoch so not zero epoch
-            der = (loss_values_train[i] - previous_loss)/(number_of_steps[i] - previous_steps)
-            derivatives.append(der)
-            previous_loss = loss_values_train[i]
-            previous_steps = number_of_steps[i]
+            # np_loss_values_train = loss_values_train.detach().numpy()
+            # np_number_of_steps = number_of_steps.detach().numpy()
+            # der = np.diff(np_loss_values_train,i)/np.diff(np_number_of_steps,i)
+            # derivatives.append(der)
+            # previous_loss = loss_values_train[i]
+            # previous_steps = number_of_steps[i]
             
         fig, axs = plt.subplots(3,sharex=True)
         fig.suptitle(f"Train vs Test Losses width{width} hidlay{hidlay}")
@@ -186,8 +191,8 @@ for u in range(different_width):
         plt.show()
         fig.savefig(f"Plot_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pdf")
         
-        torch.save(model.state_dict(), f"model_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pth")
-        print(f"Saved PyTorch Model State to model_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pth")
+        #torch.save(model.state_dict(), f"model_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pth")
+        #print(f"Saved PyTorch Model State to model_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pth")
         
         final_losses_train = []
         minimum_losses_test = []
@@ -201,8 +206,8 @@ for u in range(different_width):
         
         torch.save(final_losses_train,f"Final_losses_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
         torch.save(minimum_losses_test,f"Minimum_losses_test_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
-        torch.save(epoch_times, f"Epoch_times_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
-    
+        #torch.save(derivatives, f"Derivatives_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
+        torch.save(loss_values_train, f"Loss_values_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
         hidlay += 1 
     width += 25
     hidlay = 8
