@@ -98,10 +98,10 @@ def make_quadratic_hinge_loss():
 #     return escape_time
 
 training_times = 9 #amount of how many times to train data
-width = 100 #amount of nodes per layer
+width = 50 #amount of nodes per layer
 hidlay = 8 #amount of layers
 different_depth = 3
-different_width = 1
+different_width = 3
 
 # Load training data from own script. 
 training_data = torch.load('binary_MNIST_pca_train.pt') #Tensordataset with first image and then 1 or -1
