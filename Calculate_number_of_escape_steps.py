@@ -7,7 +7,7 @@ Created on Sat Apr  2 10:05:17 2022
 import torch
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.signal import savgol_filter, find_peaks
+from scipy.signal import savgol_filter, find_peaks, medfilt, sosfiltfilt, butter
 import pandas as pd
 
 batch_size = 200
@@ -15,10 +15,10 @@ dataset_size = 1000
 epochs = 50000
 training_times = 9
 
-width = 50
-hidlay = 8
-different_depth = 3
-different_width = 3
+width = 75
+hidlay = 9
+different_depth = 1
+different_width = 1
 #minimum_values_deriatives = []
 number_of_steps = []
 number_of_steps_in_plateau = []
@@ -35,32 +35,37 @@ for i in range(different_width):
             #  Load the training loss values and the derivatives from the trained networks.    
             #derivatives = torch.load(f"Derivatives_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
             loss_values_train = torch.load(f"Loss_values_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
-            
+            loss_values_train_tensor = torch.Tensor(loss_values_train)
             # for i in range(len(loss_values_train)):
             #     number_of_steps.append((i+1)*(dataset_size/batch_size))
             
             # window = 100
-            # summed = 0
-            # for i in range(len(loss_values_train)):
-            #     for i in range(window):
-            #         summed += loss_values_train[i] 
-            #     loss_values_train[i] = summed/window
+            # # summed = 0
+            # # for i in range(len(loss_values_train)):
+            # #     for i in range(window):
+            # #         summed += loss_values_train[i] 
+            # #     loss_values_train[i] = summed/window
             
-            # df = pd.DataFrame(loss_values_train)
+            df = pd.DataFrame(loss_values_train)
             # Smooth loss values and create tensor
             filter_times = 1000
+            window = 51
             for i in range(filter_times):
-            #     #df.rolling(window=10).mean()
-                 loss_values_train = savgol_filter(loss_values_train, 51, 3)
+                  #df[1] = df[0].ewm(0.75).mean()
+                  loss_values_train = medfilt(loss_values_train, kernel_size=window)
+                  sos = butter(8, 0.125, output='sos')
+                  loss_values_train = sosfiltfilt(sos,loss_values_train)
+            loss_values_train = loss_values_train.copy()
             loss_values_train_tensor = torch.Tensor(loss_values_train)
+            #loss_values_train_tensor = torch.Tensor(loss_values_train)
             
             # Define number of steps and derivatives
             previous_loss = 0
             previous_steps = 0
-            for i in range(len(loss_values_train)):
+            for i in range(len(loss_values_train_tensor)):
                 number_of_steps.append((i+1)*(dataset_size/batch_size)) # i + 1 since first value corresponds to first epoch so not zero epoch
-                der = (loss_values_train[i] - previous_loss)/(number_of_steps[i] - previous_steps)
-                previous_loss = loss_values_train[i]
+                der = (loss_values_train_tensor[i] - previous_loss)/(number_of_steps[i] - previous_steps)
+                previous_loss = loss_values_train_tensor[i]
                 previous_steps = number_of_steps[i]
                 derivatives.append(der)
                 
@@ -83,6 +88,7 @@ for i in range(different_width):
             
             fig = plt.figure()
             ax = fig.subplots()
+            fig.suptitle(f"Derivatives bs{batch_size} w{width} hl{hidlay} ft{filter_times} win{window}")
             ax.plot(number_of_steps, derivatives_tensor_abs,'-')
             ax.set_yscale('log')
             ax.scatter(peak_pos, height, color = 'r', s = 10, marker = 'D', label = 'maxima')
