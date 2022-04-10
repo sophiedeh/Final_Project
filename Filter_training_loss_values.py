@@ -40,3 +40,5 @@ axs[0].set_title('Train_log')
 axs[0].set_yscale('log')
 axs[1].plot(number_of_steps, loss_values_train_tensor,'-')
 axs[1].set_title('Train_linear')
+
+torch.save(loss_values_train_tensor,f"Filtered_loss_values_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}_ft{filter_times}_win{window}.pt")
