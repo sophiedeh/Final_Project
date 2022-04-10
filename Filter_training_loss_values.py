@@ -6,7 +6,7 @@ Created on Thu Apr  7 14:22:52 2022
 """
 import torch
 import matplotlib.pyplot as plt
-from scipy.signal import savgol_filter
+from scipy.signal import savgol_filter, medfilt, sosfiltfilt, butter
 import pandas as pd
 
 batch_size = 200
@@ -27,23 +27,19 @@ loss_values_train = torch.load(f"Loss_values_train_bs{batch_size}_w{width}_hl{hi
 for i in range(len(loss_values_train)):
      number_of_steps.append((i+1)*(dataset_size/batch_size))
 
-window = 51
-# summed = 0
-# for i in range(len(loss_values_train)):
-#     for i in range(window):
-#         summed += loss_values_train[i] 
-#     loss_values_train[i] = summed/window
-
 df = pd.DataFrame(loss_values_train)
 # Smooth loss values and create tensor
 
-filter_times = 1
+filter_times = 1000
+window = 51
 for i in range(filter_times):
-     df[1] = df[0].expanding(1).sum()
-     for i in range(len(df[1])):
-         df[1][i] = df[1][i]/(i+1)                   
-     #loss_values_train = savgol_filter(loss_values_train, 51, 9)
-loss_values_train_tensor = torch.Tensor(df[1])
+     #df[1] = df[0].rolling(window=window).mean()                  
+     #loss_values_train = savgol_filter(loss_values_train, window, 3)
+     # loss_values_train = medfilt(loss_values_train, kernel_size = window)
+     sos = butter(8, 0.125, output='sos')
+     loss_values_train = sosfiltfilt(sos,loss_values_train)
+loss_values_train = loss_values_train.copy()
+loss_values_train_tensor = torch.Tensor(loss_values_train)
 
 fig, axs = plt.subplots(2,sharex=True)
 fig.suptitle(f"Train vs Test Losses width{width} hidlay{hidlay}")
