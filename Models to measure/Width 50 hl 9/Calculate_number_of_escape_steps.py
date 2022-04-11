@@ -20,8 +20,10 @@ different_width = 1
 filter_times = 100
 window = 101
 version = 7
+
 number_of_steps = []
 number_of_steps_in_plateau = []
+loss_values_at_peaks = []
 total_steps_in_plateau = 0
 derivatives = []
 
@@ -80,8 +82,10 @@ for i in range(training_times):
             #     else:
             #         number_of_steps_in_plateau.append(total_steps_in_plateau)
             #         total_steps_in_plateau = 0
-                    
+            
+            loss_values_at_peaks.append(loss_values_train[0])
             for i in range(len(peak_pos)):
+                loss_values_at_peaks.append(loss_values_train[peaks[0][i]])
                 if i == 0:
                     steps_in_plateau = peak_pos[i]
                     number_of_steps_in_plateau.append(steps_in_plateau)
@@ -92,7 +96,9 @@ for i in range(training_times):
             number_of_steps_in_plateau_tensor = torch.Tensor(number_of_steps_in_plateau)
             number_of_steps_in_plateau_tensor = number_of_steps_in_plateau_tensor[number_of_steps_in_plateau_tensor>0]
             torch.save(number_of_steps_in_plateau_tensor, f"Steps_per_plateau_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
+            torch.save(loss_values_at_peaks,f"Filtered_loss_values_peaks_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
            
+
             hidlay += 1
     width += 25
     hidlay = 8
