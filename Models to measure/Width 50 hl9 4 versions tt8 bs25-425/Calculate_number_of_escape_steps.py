@@ -10,7 +10,7 @@ from scipy.signal import savgol_filter, find_peaks, sosfiltfilt, butter
 
 dataset_size = 1000
 epochs = 50000
-training_times = 4
+training_times = 8
 
 width = 50
 hidlay = 9
@@ -18,7 +18,7 @@ different_depth = 1
 different_width = 1
 filter_times = 100
 window = 101
-version = 7
+version = 4
 
 # number_of_steps = []
 # number_of_steps_in_plateau = []
@@ -27,7 +27,7 @@ version = 7
 # derivatives = []
 
 for u in range(version):
-    batch_size = 100
+    batch_size = 25
     for i in range(training_times):
             number_of_steps = []
             number_of_steps_in_plateau = []
@@ -63,7 +63,7 @@ for u in range(version):
             derivatives_tensor_abs = torch.abs(derivatives_tensor)
             
             # Find peaks in derivatives
-            peaks = find_peaks(derivatives_tensor_abs, height = 10**(-6), distance = 1000) #5000 geeft de twee meest zichtbare plateaus
+            peaks = find_peaks(derivatives_tensor_abs, height = 10**(-5), distance = 1000) #5000 geeft de twee meest zichtbare plateaus
             height = peaks[1]['peak_heights'] #list containing the height of the peaks
             peak_pos = (peaks[0]+1)*(dataset_size/batch_size)
             
@@ -106,7 +106,7 @@ for u in range(version):
             torch.save(number_of_steps_in_plateau, f"Steps_per_plateau_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
             torch.save(loss_values_at_peaks,f"Filtered_loss_values_peaks_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
             
-            batch_size += 50
+            batch_size += 25
             #hidlay += 1
     # width += 25
     # hidlay = 8
