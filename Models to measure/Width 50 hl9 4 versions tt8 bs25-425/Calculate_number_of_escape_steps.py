@@ -62,16 +62,20 @@ for u in range(version):
             derivatives_tensor = torch.DoubleTensor(derivatives)
             derivatives_tensor_abs = torch.abs(derivatives_tensor)
             
+            # Extract initial plateau
+            derivatives_tensor = derivatives_tensor[200:25000]
+            number_of_steps = number_of_steps[200:25000]
+            
             # Find peaks in derivatives
-            peaks = find_peaks(derivatives_tensor_abs, height = 10**(-5), distance = 1000) #5000 geeft de twee meest zichtbare plateaus
+            peaks = find_peaks(derivatives_tensor, height = 10**(-5), distance = 1000) #5000 geeft de twee meest zichtbare plateaus
             height = peaks[1]['peak_heights'] #list containing the height of the peaks
             peak_pos = (peaks[0]+1)*(dataset_size/batch_size)
             
             fig = plt.figure()
             ax = fig.subplots()
             fig.suptitle(f"Derivatives bs{batch_size} w{width} hl{hidlay} v{u+1} ft{filter_times} win{window}")
-            ax.plot(number_of_steps, derivatives_tensor_abs,'-')
-            ax.set_yscale('log')
+            ax.plot(number_of_steps, derivatives_tensor,'-')
+            #ax.set_yscale('log')
             ax.scatter(peak_pos, height, color = 'r', s = 10, marker = 'D', label = 'maxima')
             ax.legend()
             ax.grid()
