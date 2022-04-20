@@ -68,7 +68,7 @@ def make_quadratic_hinge_loss():
     
     return quadratic_hinge    
 
-training_times = 8 #amount of how many times to train data
+training_times = 1 #amount of how many times to train data
 width = 50 #amount of nodes per layer
 hidlay = 9 #amount of layers
 different_depth = 3
@@ -84,9 +84,10 @@ test_data = torch.load('binary_MNIST_pca_test.pt')
 dataset_size = len(training_data)
 
 # Define the batch size
-batch_size = 25
+batch_size = 300
 
-version = 4
+version = 2
+u = 3
 for i in range(training_times): 
     for u in range(version):
         # Create data loaders.
