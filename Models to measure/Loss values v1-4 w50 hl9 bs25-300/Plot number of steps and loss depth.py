@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 batch_size = 25
 dataset_size = 1000
 epochs = 50000
-training_times = 8
-version = 4
+training_times = 12
+version = 2
 
 width = 50
 hidlay = 9
@@ -23,12 +23,12 @@ es_ld_bs = [] # vector containing escape steps initial peak, loss depth initial 
 
 for u in range(version):
     for i in range(training_times):
-        steps = torch.load(f"Steps_per_plateau_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
+        steps = torch.load(f"ABS_Steps_per_plateau_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
         escape_steps.append(steps[0])
         
-        loss_value = torch.load(f"Filtered_loss_values_peaks_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
+        loss_value = torch.load(f"ABS_Filtered_loss_values_peaks_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
         loss_value_difference.append(loss_value[1]-loss_value[0])
-        
+                  
         batch_sizes.append(batch_size)
         batch_size += 25
     batch_size = 25

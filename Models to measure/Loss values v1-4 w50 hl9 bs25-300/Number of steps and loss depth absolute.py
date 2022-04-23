@@ -10,7 +10,7 @@ from scipy.signal import savgol_filter, find_peaks, sosfiltfilt, butter
 
 dataset_size = 1000
 epochs = 50000
-training_times = 8
+training_times = 12
 
 width = 50
 hidlay = 9
@@ -18,7 +18,7 @@ different_depth = 1
 different_width = 1
 filter_times = 100
 window = 101
-version = 4
+version = 2
 
 # number_of_steps = []
 # number_of_steps_in_plateau = []
@@ -37,8 +37,10 @@ for u in range(version):
 
             #  Load the filtered training loss values and the derivatives from the trained networks.    
             #loss_values_train = torch.load(f"Filtered_loss_values_train_bs{batch_size}_w{width}_hl{hidlay}_ds{dataset_size}_e{epochs}_tt{training_times}_ft{filter_times}_win{window}.pt")
-            loss_values_train = torch.load(f"Loss_values_train_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
-            
+            if batch_size < 225:
+                loss_values_train = torch.load(f"Loss_values_train_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt8.pt")
+            else: 
+                loss_values_train = torch.load(f"Loss_values_train_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt5.pt")
             # for i in range(len(loss_values_train)):
             #     if i % 10 == 0:
             #         loss_values_downsampled.append(loss_values_train[i])
