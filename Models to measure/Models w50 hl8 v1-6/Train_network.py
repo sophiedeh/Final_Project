@@ -69,8 +69,8 @@ def make_quadratic_hinge_loss():
     return quadratic_hinge    
 
 training_times = 12 #amount of how many times to train data
-width = 100 #amount of nodes per layer
-hidlay = 10 #amount of layers
+width = 50 #amount of nodes per layer
+hidlay = 8 #amount of layers
 different_depth = 1
 different_width = 3
 
