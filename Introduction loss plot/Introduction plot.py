@@ -21,10 +21,11 @@ loss_values_train = torch.load(f"Loss_values_train_bs{batch_size}_w{width}_hl{hi
 
 fig = plt.figure()
 ax = fig.subplots()
-fig.suptitle(f"Loss plot model with batch size {batch_size}, width {width} and hidden layers {hidlay}")
+fig.suptitle(f"Training loss plot")
 ax.plot(loss_values_train,'-')
 ax.set_yscale('log')
-ax.grid()
+ax.set_xlabel("Number of steps (-)")
+ax.set_ylabel("Loss value (-)")
 plt.show()
 
 fig.savefig(f"Loss value of trained model with batch size {batch_size}, width {width} and hidden layers {hidlay}.pdf")
