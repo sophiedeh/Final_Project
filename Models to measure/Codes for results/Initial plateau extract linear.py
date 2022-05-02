@@ -10,10 +10,10 @@ from scipy.signal import savgol_filter, find_peaks, sosfiltfilt, butter
 
 dataset_size = 1000
 epochs = 50000
-training_times = 12
+training_times = 1
 
-width = 10
-hidlay = 6
+width = 50
+hidlay = 8
 different_depth = 1
 different_width = 1
 filter_times = 100
@@ -36,7 +36,7 @@ for u in range(version):
             loss_values_downsampled = []
             
             # Load loss values
-            loss_values_train = torch.load(f"Loss_values_train_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
+            loss_values_train = torch.load(f"Loss_values_train_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt12.pt")
             
             #  Load the filtered training loss values and the derivatives from the trained networks.    
             # if batch_size < 225:
@@ -62,25 +62,15 @@ for u in range(version):
             #derivatives_tensor_abs = torch.abs(derivatives_tensor)
             
             # Extract initial plateau
-            derivatives_tensor = derivatives_tensor[200:3000]
-            number_of_steps = number_of_steps[200:3000]
+            derivatives_tensor = derivatives_tensor[100:1000]
+            loss_values_train = loss_values_train[100:1000]
+            number_of_steps = number_of_steps[100:1000]
             
-            # Find peaks in derivatives
-            # peaks = find_peaks(derivatives_tensor, height = 10**(-5), distance = 1000) #5000 geeft de twee meest zichtbare plateaus
-            # height = peaks[1]['peak_heights'] #list containing the height of the peaks
-            # peak_pos = (peaks[0]+1)*(dataset_size/batch_size)
-            
-            #Finding the minima
-            # derivatives_tensor_minima = torch.mul(derivatives_tensor,-1)
-            # peaks = find_peaks(derivatives_tensor_minima, height = 5*10**(-5), distance = 1000)
-            # peak_pos = (peaks[0]+1)*(dataset_size/batch_size) #list of the minima positions
-            # height = derivatives_tensor[peaks[0]] #list of the mirrored minima heights
-            
+          
             fig = plt.figure()
             ax = fig.subplots()
             fig.suptitle(f"Initial plateau derivatives bs{batch_size} w{width} hl{hidlay} v{u+1} ft{filter_times} win{window}")
             ax.plot(number_of_steps, derivatives_tensor,'-')
-            #ax.scatter(peak_pos, height, color = 'r', s = 10, marker = 'D', label = 'minima')
             ax.legend()
             ax.set_xlabel("Number of steps (-)")
             ax.set_ylabel("Derivatives (-)")
@@ -88,21 +78,16 @@ for u in range(version):
             
             fig.savefig(f"Initial_plateau_derivatives_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pdf")
             
-            # loss_values_at_peaks = []
-            # loss_values_at_peaks.append(loss_values_train[0])
-            # for i in range(len(peak_pos)):
-            #     loss_values_at_peaks.append(loss_values_train[peaks[0][i]])
-            #     if i == 0:
-            #         steps_in_plateau = peak_pos[i]
-            #         number_of_steps_in_plateau.append(steps_in_plateau)
-            #     else:
-            #         steps_in_plateau = peak_pos[i]-peak_pos[i-1]
-            #         number_of_steps_in_plateau.append(steps_in_plateau)
-                         
-            # number_of_steps_in_plateau_tensor = torch.Tensor(number_of_steps_in_plateau)
-            # number_of_steps_in_plateau_tensor = number_of_steps_in_plateau_tensor[number_of_steps_in_plateau_tensor>0]
-            # torch.save(number_of_steps_in_plateau, f"Steps_per_plateau_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
-            # torch.save(loss_values_at_peaks,f"Filtered_loss_values_peaks_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
+            fig = plt.figure()
+            ax = fig.subplots()
+            fig.suptitle(f"Initial plateau loss value plot bs{batch_size} w{width} hl{hidlay} v{u+1} ft{filter_times} win{window}")
+            ax.plot(number_of_steps, loss_values_train,'-')
+            ax.legend()
+            ax.set_xlabel("Number of steps (-)")
+            ax.set_ylabel("Loss value plot (-)")
+            plt.show()
+            
+            fig.savefig(f"Initial_plateau_loss_value_plot_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pdf")
             
             batch_size += 25
             #hidlay += 1

@@ -57,7 +57,7 @@ for u in range(version):
             previous_loss = 0
             previous_steps = 0
             for i in range(len(loss_values_train)):
-                number_of_steps.append((i+11)*(dataset_size/batch_size)) # i + 1 since first value corresponds to first epoch so not zero epoch
+                number_of_steps.append((i+1)*(dataset_size/batch_size)) # i + 1 since first value corresponds to first epoch so not zero epoch
                 der = (loss_values_train[i] - previous_loss)/(number_of_steps[i] - previous_steps)
                 previous_loss = loss_values_train[i]
                 previous_steps = number_of_steps[i]
