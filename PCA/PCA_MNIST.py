@@ -57,8 +57,8 @@ output_df.to_csv('pca_train.csv')
 
 # Make mini train and test sets with first 10 PCA components and 1000 data points
 # Note pandas .loc slicing includes start AND END points, but cols[:11] does not
-mini_train = output_df.loc[:999, cols[:11]]
-mini_test = output_df.loc[1000:1999, cols[:11]] #creates tensor (1000,11)
+mini_train = output_df.loc[1000:1999, cols[:11]]
+mini_test = output_df.loc[2000:2999, cols[:11]] #creates tensor (1000,11)
 
 mini_test.index = range(mini_test.shape[0])
 
@@ -150,8 +150,8 @@ bm_test_tensor = torch.cat(bm_test)
 bm_test_data = TensorDataset(bm_test_tensor, bm_test_l)
 
 if not debug:
-    fname_train = 'binary_MNIST_pca_train.pt'
+    fname_train = 'binary_MNIST_pca_train_2nd_version.pt'
     torch.save(bm_train_data, fname_train)
     
-    fname_test = 'binary_MNIST_pca_test.pt'
+    fname_test = 'binary_MNIST_pca_test_2nd_version.pt'
     torch.save(bm_test_data, fname_test)
