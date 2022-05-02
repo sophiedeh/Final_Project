@@ -60,6 +60,7 @@ output_df.to_csv('pca_train.csv')
 mini_train = output_df.loc[1000:1999, cols[:11]]
 mini_test = output_df.loc[2000:2999, cols[:11]] #creates tensor (1000,11)
 
+mini_train.index = range(mini_train.shape[0])
 mini_test.index = range(mini_test.shape[0])
 
 print('mini_train.shape = ', mini_train.shape)
