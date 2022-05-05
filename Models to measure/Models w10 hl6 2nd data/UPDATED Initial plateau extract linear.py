@@ -42,9 +42,9 @@ for u in range(version):
                 number_of_steps.append((i+1)*(dataset_size/batch_size)) # i + 1 since first value corresponds to first epoch so not zero epoch        
             
             # Extract initial plateau
-            loss_values_train = loss_values_train[100:2000]
-            loss_values_train_filtered = loss_values_train_filtered[100:2000]
-            number_of_steps = number_of_steps[100:2000] 
+            loss_values_train = loss_values_train[100:3000]
+            loss_values_train_filtered = loss_values_train_filtered[100:3000]
+            number_of_steps = number_of_steps[100:3000] 
           
             fig = plt.figure()
             ax = fig.subplots()
