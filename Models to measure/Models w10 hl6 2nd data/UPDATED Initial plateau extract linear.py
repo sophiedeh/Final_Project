@@ -10,7 +10,7 @@ from scipy.signal import savgol_filter, find_peaks, sosfiltfilt, butter
 
 dataset_size = 1000
 epochs = 50000
-training_times = 1 
+training_times = 12 
 # Set training time to 1 to determine per batch size what an appropriate length is
 
 width = 10
@@ -19,9 +19,9 @@ filter_times = 100
 window = 101
 version = 4
 
-
 for u in range(version):
-    batch_size = 275
+    batch_size = 25
+    set_range = 1000 # every batch size step 1000 more
     for i in range(training_times):
             number_of_steps = []
                        
@@ -42,9 +42,9 @@ for u in range(version):
                 number_of_steps.append((i+1)*(dataset_size/batch_size)) # i + 1 since first value corresponds to first epoch so not zero epoch        
             
             # Extract initial plateau
-            loss_values_train = loss_values_train[100:3000]
-            loss_values_train_filtered = loss_values_train_filtered[100:3000]
-            number_of_steps = number_of_steps[100:3000] 
+            loss_values_train = loss_values_train[100:set_range]
+            loss_values_train_filtered = loss_values_train_filtered[100:set_range]
+            number_of_steps = number_of_steps[100:set_range] 
           
             fig = plt.figure()
             ax = fig.subplots()
@@ -69,3 +69,4 @@ for u in range(version):
             fig.savefig(f"Initial_plateau_loss_value_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pdf")
             
             batch_size += 25
+            set_range += 1000

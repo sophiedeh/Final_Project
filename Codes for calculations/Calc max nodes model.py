@@ -8,8 +8,11 @@ def max_nodes_model(input, output, width, layers):
     total = input*width + layers*width*width + width*output
     return total
 
-P = max_nodes_model(10, 1, 20, 7)
-NP = 1000/P
+# N is number of parameters
+# P is the to fitting datapoints
 
-print(f"P = {P}")
+N = max_nodes_model(10, 1, 5, 5)
+NP = N/1000
+
+print(f"N = {N}")
 print(f"N/P = {NP}")
