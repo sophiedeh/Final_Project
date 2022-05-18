@@ -12,8 +12,8 @@ dataset_size = 1000
 epochs = 50000
 training_times = 12
 
-width = 10
-hidlay = 6
+width = 100
+hidlay = 10
 different_depth = 1
 different_width = 1
 filter_times = 100
