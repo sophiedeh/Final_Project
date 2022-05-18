@@ -25,10 +25,14 @@ def train_SGD(dataloader, model, loss_fn, optimizer):
         
         # Backpropagation
         optimizer.zero_grad() #no accumulation of gradients
-        loss.backward() 
+        loss.backward()
         optimizer.step()
+        #import pdb; pdb.set_trace()
         
-        gradient_SGD.append(model.grad)
+        for name, param in model.named_parameters():
+            for i in range(hidlay*2+1):
+                if name == f"linear_relu_stack.{i}.weight":
+                    gradient_SGD.append(param.grad)
         
         running_loss += loss.item()
         if batch % 100 == 0:
@@ -55,8 +59,11 @@ def train_GD(dataloader, model, loss_fn, optimizer):
         loss.backward() 
         optimizer.step()
         
-        gradient_GD.append(model.grad)
-        
+        for name, param in model.named_parameters():
+            for i in range(hidlay*2+1):
+                if name == f"linear_relu_stack.{i}.weight":
+                    gradient_GD.append(param.grad)
+                    
         running_loss += loss.item()
         if batch % 100 == 0:
             loss, current = loss.item(), batch * len(X)
@@ -104,12 +111,12 @@ for u in range(version):
             
             modelSGD = NeuralNetwork(width=width,hidlay=hidlay).to(device)
             modelGD = NeuralNetwork(width=width,hidlay=hidlay).to(device)
-            modelSGD = modelSGD.load_state_dict(torch.load(f"initial_model_w{width}_hl{hidlay}_v{u+1}.pth"), map_location=torch.device(device)) 
-            modelGD = modelGD.load_state_dict(torch.load(f"initial_model_w{width}_hl{hidlay}_v{u+1}.pth"), map_location=torch.device(device)) 
+            modelSGD.load_state_dict(torch.load(f"initial_model_w{width}_hl{hidlay}_v{u+1}.pth", map_location=torch.device(device))) 
+            modelGD.load_state_dict(torch.load(f"initial_model_w{width}_hl{hidlay}_v{u+1}.pth", map_location=torch.device(device)))
             
             loss_fn = make_quadratic_hinge_loss()
             optimizerSGD = torch.optim.SGD(modelSGD.parameters(), lr=1e-3)
-            optimizerGD = torch.optim.GD(modelGD.parameters(), lr=1e-3)
+            optimizerGD = torch.optim.SGD(modelGD.parameters(), lr=1e-3)
             
             gradient_SGD = []
             gradient_GD = []
@@ -119,6 +126,8 @@ for u in range(version):
                 train_SGD(train_dataloader_SGD, modelSGD, loss_fn, optimizerSGD)
                 train_GD(train_dataloader_GD, modelGD, loss_fn, optimizerGD)
             
+            gradient_SGD = torch.Tensor(gradient_SGD)
+            gradient_GD = torch.Tensor(gradient_GD)
             sub = torch.sub(gradient_SGD, gradient_GD)
             aver = sub*sub 
             noise_per_bs.append(aver)

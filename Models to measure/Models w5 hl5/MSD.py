@@ -32,38 +32,51 @@ for i in range(training_times):
             model.load_state_dict(torch.load(f"model_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epoch}_tt{training_times}.pth")) 
             print(model.parameters())
     
-            
-            
             for name, param in model.named_parameters():
-                if param.requires_grad: #check
-                    print(name, param.data)
-                    for i in range((hidlay+1)*2):
-                    if name == linear_relu_stack.i.weight:
-                        if epoch == 0:
-                            initial_weights.append(param.data)
-                        else    
-                            weights.append(param.data)
+                if param.requires_grad: # is for freezing, doesn't seem necessary now?
+                    for i in range(hidlay*2+1):
+                        if name == f"linear_relu_stack.{i}.weight":
+                            if epoch == 0:
+                                initial_weights.append(param.data)
+                            else:
+                                weights.append(param.data)
+                            
+            # for name, param in model.named_parameters():
+            #     if param.requires_grad: #check
+            #         print(name, param.data)
+            #         for i in range((hidlay+1)*2):
+            #         if name == linear_relu_stack.i.weight:
+            #             if epoch == 0:
+            #                 initial_weights.append(param.data)
+            #             else    
+            #                 weights.append(param.data)
             
             
             # for i in range(0 10 2) or loop all layers: try, except
             #import pdb; pdb.set_trace()
             
             
+            # if epoch == 0:
+            #     initial_weights.append()
+            # else:
+            #     weights.append()
+            
+            # initial_weights = torch.Tensor(initial_weights)
+            # weights = torch.Tensor(weights)
             if epoch == 0:
-                initial_weights.append()
+                epoch += 100
+                break
             else:
-                weights.append()
+                for i in range(len(initial_weights)):
+                    sub = torch.sub(initial_weights[i],weights[i]) 
+                    squared = torch.square(sub)
+                    summed = torch.sum(squared)
+                    MSDi = (1/len(initial_weights)) * summed
             
-            initial_weights = torch.Tensor(initial_weights)
-            weights = torch.Tensor(weights)
-            
-            sub = torch.sub(initial_weights,weights) 
-            squared = torch.square(sub)
-            summed = torch.sum(squared)
-            MSDi = (1/len(initial_weights)) * summed
-            
-            MSD.append(MSDi)
-            epoch+=100
+                    MSD.append(MSDi)
+                    epoch += 100
         torch.save(MSD,f"MSD_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}.pth")
         epoch = 0
     batch_size += 25
+    
+    
