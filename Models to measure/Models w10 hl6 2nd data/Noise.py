@@ -89,8 +89,8 @@ def make_quadratic_hinge_loss():
     return quadratic_hinge 
 
 training_times = 12
-width = 100
-hidlay = 10
+width = 10
+hidlay = 6
 epochs = 5000
 version = 4
 dataset_size = 1000

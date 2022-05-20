@@ -25,18 +25,24 @@ for u in range(version):
         
         # Load loss values
         loss_values_train = torch.load(f"Loss_values_train_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epochs}_tt{training_times}.pt")
+        loss_values = []
         
-        for i in range(len(loss_values_train)):
+        for i in range(0, 50000, 100):
+            loss_values.append(loss_values_train[i])
             number_of_steps.append((i+1)*(dataset_size/batch_size))
+        # for i in range(len(loss_values_train)):
+        #     number_of_steps.append((i+1)*(dataset_size/batch_size))
         
         #fig = plt.figure()
         #ax = fig.subplots()
-        
-        plt.plot(number_of_steps[0:300], loss_values_train[0:300],'-')
+
+        plt.plot(number_of_steps, loss_values,'-')
         plt.yscale('log')
         #plt.legend(f"{batch_size}")
         plt.xlabel("Number of steps (-)")
         plt.ylabel("Loss value (-)")
+        plt.xlim([85000,140000])
+        plt.ylim(10**(-3),0)
         
         batch_size += 25
     plt.legend(['Bs 25','Bs 50', 'Bs 75','Bs 100', 'Bs 125', 'Bs 150', 'Bs 175', 'Bs 200','Bs 225', 'Bs 250', 'Bs 275', 'Bs 300'])
