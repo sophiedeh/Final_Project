@@ -50,7 +50,6 @@ for u in range(version):
 
             if epoch == 0:
                 epoch += 100
-                break
             else:
                 for i in range(len(initial_weights)):
                     sub = torch.sub(initial_weights[i],weights[i]) 
