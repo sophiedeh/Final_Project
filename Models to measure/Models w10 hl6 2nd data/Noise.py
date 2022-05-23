@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader
 from Models_w50to100_hl8to10 import NeuralNetwork
 import matplotlib.pyplot as plt
 
+
 def train_SGD(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
     model.train()
@@ -28,6 +29,7 @@ def train_SGD(dataloader, model, loss_fn, optimizer):
         optimizer.zero_grad() #no accumulation of gradients
         loss.backward()
         optimizer.step()
+        #time_step_SGD += 1
         #import pdb; pdb.set_trace()
         
         for name, param in model.named_parameters():
@@ -42,7 +44,7 @@ def train_SGD(dataloader, model, loss_fn, optimizer):
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
         
         break
-    return gradient_SGD
+    return gradient_SGD#, time_step_SGD
                
     #loss_values_train.append(running_loss/len(dataloader)) #every batch adds to running loss therefore divide by number of batches
 
@@ -74,7 +76,7 @@ def train_GD(dataloader, model, loss_fn, optimizer):
             loss, current = loss.item(), batch * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
             
-    return gradient_GD   
+    return gradient_GD, time_step_GD   
 
 def make_quadratic_hinge_loss():
     
@@ -100,6 +102,8 @@ weights = []
 initial_weights = []
 GDlosses = []
 SGDlosses = []
+#time_step_SGD = 0
+#time_step_GD = 0
 
 training_data = torch.load('binary_MNIST_pca_train.pt')
 
@@ -127,13 +131,20 @@ for u in range(version):
             
             gradient_SGD = []
             gradient_GD = []
+            time_step_GD = 0
+            time_step_SGD = 0
             
             for t in range(epochs):
-                print(f"Epoch {t+1}\n-------------------------------")
-                #train_SGD(train_dataloader_SGD, modelSGD, loss_fn, optimizerSGD)
-                #train_GD(train_dataloader_GD, modelGD, loss_fn, optimizerGD)
-                gradient_SGD.append(train_SGD(train_dataloader_SGD, modelSGD, loss_fn, optimizerSGD))
-                gradient_GD.append(train_GD(train_dataloader_GD, modelGD, loss_fn, optimizerGD))
+                #if time_step_GD != 120000 and time_step_SGD != 120000:
+                    print(f"Epoch {t+1}\n-------------------------------")
+                    #train_SGD(train_dataloader_SGD, modelSGD, loss_fn, optimizerSGD)
+                    #train_GD(train_dataloader_GD, modelGD, loss_fn, optimizerGD)
+                    # a,b = train_SGD(train_dataloader_SGD, modelSGD, loss_fn, optimizerSGD)
+                    # c,d = train_GD(train_dataloader_GD, modelGD, loss_fn, optimizerGD)
+                    gradient_SGD.append(train_SGD(train_dataloader_SGD, modelSGD, loss_fn, optimizerSGD))
+                    gradient_GD.append(train_GD(train_dataloader_GD, modelGD, loss_fn, optimizerGD))
+                    # time_step_GD += d
+                    # time_step_SGD += b
                 
             aver_noises = []
             for i in range(len(gradient_SGD)):
