@@ -76,7 +76,7 @@ def train_GD(dataloader, model, loss_fn, optimizer):
             loss, current = loss.item(), batch * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
             
-    return gradient_GD, time_step_GD   
+    return gradient_GD  
 
 def make_quadratic_hinge_loss():
     
