@@ -68,17 +68,18 @@ for u in range(version):
         
         number_of_steps = []
         for i in range(len(epochs)):
-            number_of_steps.append((i+1)*(dataset_size/batch_size))
+            number_of_steps.append((epochs[i])*(dataset_size/batch_size))
         
         fig = plt.figure()
         ax = fig.subplots()
         fig.suptitle(f"MSD of bs{batch_size} w{width} hl{hidlay} v{u+1}")       
-        ax.plot(number_of_steps, MSD_per_epoch,'-', marker='o')
+        ax.plot(number_of_steps, MSD_per_epoch,'-')
         ax.set_xlabel("Number of steps (-)")
         ax.set_ylabel("MSD of the layers over time (-)")
+        ax.set_yscale('log')
         plt.savefig(f"MSD of bs{batch_size} w{width} hl{hidlay} v{u+1}.png",bbox_inches='tight')
         
-        
+        batch_size += 25
     #     average_MSD_per_epoch = torch.DoubleTensor(average_MSD_per_epoch)
     #     average_MSD_per_bs.append(torch.mean(average_MSD_per_epoch))
     #     torch.save(average_MSD_per_bs,f"MSD_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}.pth")
