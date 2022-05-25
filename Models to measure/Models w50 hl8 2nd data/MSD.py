@@ -16,8 +16,6 @@ version = 4
 dataset_size = 1000
 epoch = 0
 batch_size = 25 
-weights = []
-initial_weights = []
 MSD = []
 batch_sizes = []
 
@@ -28,17 +26,13 @@ for u in range(version):
     for i in range(training_times):
         average_MSD_per_epoch = []
         epoch = 0
+        initial_weights = []
         for t in range(500): 
-            # device = "cuda" if torch.cuda.is_available() else "cpu"
-            # print(f"Using {device} device")
-            
-            # model = NeuralNetwork(width=width,hidlay=hidlay).to(device)
-            # model.load_state_dict(torch.load(f"model_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{t}_tt{training_times}.pth", map_location=torch.device(device)))  
-            
             model = NeuralNetwork(width=width,hidlay=hidlay)
             model.load_state_dict(torch.load(f"model_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}_ds{dataset_size}_e{epoch}_tt{training_times}.pth")) 
             print(model.parameters())
     
+            weights = []
             for name, param in model.named_parameters():
                 if param.requires_grad: # is for freezing, doesn't seem necessary now?
                     for i in range(hidlay*2+1):
@@ -47,7 +41,8 @@ for u in range(version):
                                 initial_weights.append(param.data)
                             else:
                                 weights.append(param.data)
-            MSD = []                        
+            MSD = []
+            epochs = []
             if epoch == 0:
                 epoch += 100
             else:
@@ -57,10 +52,20 @@ for u in range(version):
                     #summed = torch.sum(squared)
                     MSDi = torch.mean(squared) #mean MSD of one layer
                     MSD.append(MSDi) #array containing MSD of all layers
-                MSD = torch.DoubleTensor(MSD)
-                aver_MSD = torch.mean(MSD) #average MSD of all the layers
-                average_MSD_per_epoch.append(aver_MSD)        
-                epoch+= 100
+                MSD = torch.DoubleTensor(MSD) #MSD of all layers at one particular time
+                aver_MSD = torch.mean(MSD) #average MSD of all the layers at that time
+                #average_MSD_per_epoch.append(aver_MSD)        
+                epochs.append(epoch)
+                epoch += 100
+        
+        number_of_steps = []
+        for i in range(len(epochs)):
+            number_of_steps.append((i+1)*(dataset_size/batch_size))
+        
+        fig = plt.figure()
+        ax = fig.subplots()
+        fig.suptitle(f"MSD per layer bs{batch_size} w{width} hl{hidlay} v{u+1}")       
+        
         average_MSD_per_epoch = torch.DoubleTensor(average_MSD_per_epoch)
         average_MSD_per_bs.append(torch.mean(average_MSD_per_epoch))
         torch.save(average_MSD_per_bs,f"MSD_bs{batch_size}_w{width}_hl{hidlay}_v{u+1}.pth")

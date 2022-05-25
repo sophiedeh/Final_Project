@@ -43,7 +43,7 @@ def train_SGD(dataloader, model, loss_fn, optimizer):
             loss, current = loss.item(), batch * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
         
-        break
+        break #since we break after the first step the number of time steps is equal to epoch
     return gradient_SGD#, time_step_SGD
                
     #loss_values_train.append(running_loss/len(dataloader)) #every batch adds to running loss therefore divide by number of batches
