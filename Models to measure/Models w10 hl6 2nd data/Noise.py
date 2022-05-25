@@ -93,7 +93,7 @@ def make_quadratic_hinge_loss():
 training_times = 12
 width = 10
 hidlay = 6
-epochs = 5000
+epochs = 10000 #escape time is from above 20000 number of steps so should be in initial plateau - 10000
 version = 4
 dataset_size = 1000
 epoch = 0
